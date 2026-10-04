@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics I Quiz — PHY 31101</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #090e14;
+  --surface: #121a24;
+  --surface2: #1b2635;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #f0f0f0;
+  --muted: #8a9ca8;
+  --accent: #3498db;
+  --accent2: #2980b9;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --amber: #f1c40f;
+  --pill-bg: rgba(52, 152, 219, 0.12);
+  --pill-border: rgba(52, 152, 219, 0.3);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.65; min-height: 100vh; }
+body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(52,152,219,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(52,152,219,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+.wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 0 20px 80px; }
+.screen { display: none; animation: fadeUp 0.4s ease; }
+.screen.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.nav-logo { font-family: var(--font-display); font-weight: 800; font-size: 15px; letter-spacing: 0.05em; color: var(--accent); }
+.nav-logo span { color: var(--muted); font-weight: 400; }
+.nav-links { display: flex; gap: 6px; }
+.nav-btn { background: transparent; border: 1px solid var(--border2); color: var(--muted); padding: 6px 14px; border-radius: 40px; font-size: 12px; font-family: var(--font-body); cursor: pointer; transition: all 0.2s; }
+.nav-btn:hover, .nav-btn.active { border-color: var(--accent); color: var(--accent); background: var(--pill-bg); }
+.hero { padding: 50px 0 36px; }
+.hero-tag { display: inline-flex; align-items: center; gap: 8px; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--accent); font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 14px; border-radius: 40px; margin-bottom: 28px; }
+.hero-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+h1 { font-family: var(--font-display); font-size: clamp(34px, 6vw, 56px); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 18px; }
+h1 em { font-style: normal; color: var(--accent); }
+.hero-sub { font-size: 15px; color: var(--muted); max-width: 520px; margin-bottom: 32px; line-height: 1.7; }
+.hero-stats { display: flex; gap: 28px; margin-bottom: 36px; }
+.stat-n { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--text); }
+.stat-l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+.register-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 32px; margin-bottom: 40px; }
+.register-card h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.register-card p { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.form-row.full { grid-template-columns: 1fr; }
+label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+input, select { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: var(--font-body); font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s; }
+input:focus, select:focus { border-color: var(--accent); }
+.topic-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.topic-toggle { background: var(--surface2); border: 1px solid var(--border2); color: var(--muted); padding: 6px 14px; border-radius: 40px; font-size: 12px; cursor: pointer; font-family: var(--font-body); transition: all 0.2s; }
+.topic-toggle.on { background: var(--pill-bg); border-color: var(--pill-border); color: var(--accent); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-body); font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 40px; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; color: #fff; background: var(--accent); }
+.btn:hover { background: #5dade2; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(52,152,219,0.3); }
+.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--muted); font-weight: 500; }
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); box-shadow: none; }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+.progress-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.progress-label { font-size: 12px; color: var(--muted); }
+.progress-score { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--accent); }
+.progress-track { height: 3px; background: var(--surface2); border-radius: 3px; margin-bottom: 28px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+.q-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; padding: 28px 28px 20px; margin-bottom: 16px; }
+.q-section-tag { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); background: var(--pill-bg); border: 1px solid var(--pill-border); padding: 3px 10px; border-radius: 40px; margin-bottom: 14px; }
+.q-text { font-family: var(--font-display); font-size: 18px; font-weight: 600; line-height: 1.4; color: var(--text); margin-bottom: 22px; }
+.options { display: grid; gap: 9px; }
+.opt-btn { display: flex; align-items: flex-start; gap: 12px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 13px 16px; text-align: left; cursor: pointer; width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--text); transition: all 0.2s; line-height: 1.5; }
+.opt-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(52,152,219,0.06); }
+.opt-btn:disabled { cursor: default; }
+.opt-letter { min-width: 24px; height: 24px; border-radius: 6px; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--muted); font-family: var(--font-display); flex-shrink: 0; margin-top: 1px; }
+.opt-btn.correct { border-color: var(--green); background: rgba(46,204,113,0.08); }
+.opt-btn.correct .opt-letter { background: var(--green); color: #000; }
+.opt-btn.wrong { border-color: var(--red); background: rgba(231,76,60,0.08); }
+.opt-btn.wrong .opt-letter { background: var(--red); color: #fff; }
+.feedback-box { border-radius: 10px; padding: 14px 16px; font-size: 13px; line-height: 1.65; margin-bottom: 14px; display: none; }
+.feedback-box.correct { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; }
+.feedback-box.wrong { background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3); color: #e74c3c; }
+.feedback-box strong { display: block; margin-bottom: 4px; font-family: var(--font-display); font-size: 13px; }
+.discussion-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; display: none; }
+.discussion-section h4 { font-family: var(--font-display); font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+.comments-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; max-height: 260px; overflow-y: auto; }
+.comment { background: var(--surface2); border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+.comment-author { font-weight: 500; color: var(--accent); font-size: 12px; margin-bottom: 3px; }
+.comment-text { color: var(--text); line-height: 1.5; }
+.comment-time { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.comment-input-row { display: flex; gap: 8px; }
+.comment-input-row input { flex: 1; }
+.no-comments { font-size: 12px; color: var(--muted); font-style: italic; }
+.quiz-nav { display: flex; align-items: center; justify-content: space-between; }
+.result-hero { text-align: center; padding: 60px 0 40px; }
+.result-ring { width: 140px; height: 140px; border-radius: 50%; background: conic-gradient(var(--accent) var(--pct, 0%), var(--surface2) 0%); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; box-shadow: 0 0 40px rgba(52,152,219,0.2); }
+.result-ring-inner { width: 108px; height: 108px; border-radius: 50%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.result-pct { font-family: var(--font-display); font-size: 32px; font-weight: 800; }
+.result-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.result-title { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+.result-sub { color: var(--muted); max-width: 480px; margin: 0 auto 32px; font-size: 14px; line-height: 1.65; }
+.result-breakdown { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 36px; }
+.breakdown-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; padding: 18px; text-align: center; }
+.breakdown-n { font-family: var(--font-display); font-size: 28px; font-weight: 700; }
+.breakdown-l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.lb-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 16px; overflow: hidden; margin-bottom: 24px; }
+.lb-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.lb-header h3 { font-family: var(--font-display); font-size: 16px; }
+.lb-row { display: flex; align-items: center; gap: 16px; padding: 14px 24px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+.lb-row:hover { background: var(--surface2); }
+.lb-rank { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--muted); width: 28px; text-align: center; }
+.lb-rank.gold { color: #f1c40f; } .lb-rank.silver { color: #bdc3c7; } .lb-rank.bronze { color: #e67e22; }
+.lb-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 13px; font-weight: 700; }
+.lb-info { flex: 1; }
+.lb-name { font-size: 14px; font-weight: 500; }
+.lb-meta { font-size: 11px; color: var(--muted); }
+.lb-score-wrap { text-align: right; }
+.lb-score { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--accent); }
+.lb-pct { font-size: 11px; color: var(--muted); }
+.lb-empty { padding: 30px; text-align: center; color: var(--muted); font-size: 13px; }
+.badge-you { background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--accent); font-size: 10px; padding: 1px 8px; border-radius: 40px; margin-left: 6px; }
+.text-muted { color: var(--muted); }
+@media(max-width: 560px) { .form-row { grid-template-columns: 1fr; } .result-breakdown { grid-template-columns: 1fr 1fr; } h1 { font-size: 32px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="nav-logo">PHY31101<span>/mechanics</span></div>
+    <div class="nav-links">
+      <button class="nav-btn active" onclick="showScreen('home')">Quiz</button>
+      <button class="nav-btn" onclick="showScreen('leaderboard')">Leaderboard</button>
+    </div>
+  </nav>
+
+  <div id="screen-home" class="screen active">
+    <div class="hero">
+      <div class="hero-tag">PHY 31101 · UNITS, DIMENSIONS, MEASUREMENT &amp; ERRORS</div>
+      <h1>Master <em>Mechanics</em><br>from Units to Uncertainty</h1>
+      <p class="hero-sub">A large bank of exam-style questions covering physical quantities, SI units and prefixes, unit conversion, dimensional analysis, significant figures, accuracy and errors, and error propagation. Questions and answer positions are shuffled every attempt.</p>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-n" id="stat-q">0</div><div class="stat-l">Questions</div></div>
+        <div class="stat"><div class="stat-n" id="stat-t">0</div><div class="stat-l">Topics</div></div>
+        <div class="stat"><div class="stat-n" id="stat-players">0</div><div class="stat-l">Attempts</div></div>
+      </div>
+    </div>
+
+    <div class="register-card">
+      <h2>Initialize Training</h2>
+      <p>Enter your details to track your progress on the class leaderboard.</p>
+      <div class="form-row">
+        <div>
+          <label>Full name</label>
+          <input type="text" id="inp-name" placeholder="e.g. Ernest Leo">
+        </div>
+        <div>
+          <label>Reg. number</label>
+          <input type="text" id="inp-reg" placeholder="e.g. 2501013**">
+        </div>
+      </div>
+      <div class="form-row full">
+        <div>
+          <label>Number of questions</label>
+          <select id="inp-count">
+            <option value="20">20 questions (quick)</option>
+            <option value="40" selected>40 questions (exam-length)</option>
+            <option value="60">60 questions</option>
+            <option value="all">All available</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div>
+          <label>Filter Topics</label>
+          <div class="topic-grid" id="topic-grid"></div>
+        </div>
+      </div>
+      <button class="btn" onclick="startQuiz()" style="width:100%">Begin Assessment →</button>
+    </div>
+  </div>
+
+  <div id="screen-quiz" class="screen">
+    <div style="padding-top: 24px;">
+      <div class="progress-header">
+        <span class="progress-label" id="prog-label">Question 1</span>
+        <span class="progress-score" id="prog-score">0 pts</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+
+      <div class="q-card">
+        <div class="q-section-tag" id="q-section"></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="options" id="options"></div>
+      </div>
+
+      <div class="feedback-box" id="feedback"></div>
+
+      <div class="discussion-section" id="discussion-section">
+        <h4>💬 Lecture Notes</h4>
+        <div class="comments-list" id="comments-list"></div>
+        <div class="comment-input-row">
+          <input type="text" id="comment-input" placeholder="Add your thought…" maxlength="200" onkeydown="if(event.key==='Enter')postComment()">
+          <button class="btn btn-ghost btn-sm" onclick="postComment()">Post</button>
+        </div>
+      </div>
+
+      <div class="quiz-nav" style="margin-top:20px;">
+        <button class="btn btn-ghost" onclick="showScreen('home')">← Exit</button>
+        <button class="btn" id="next-btn" onclick="nextQ()" style="display:none">Next Question →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-result" class="screen">
+    <div class="result-hero">
+      <div class="result-ring" id="result-ring">
+        <div class="result-ring-inner">
+          <div class="result-pct" id="result-pct">0%</div>
+          <div class="result-label">score</div>
+        </div>
+      </div>
+      <div class="result-title" id="result-title">Analysis Complete</div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="result-breakdown">
+        <div class="breakdown-card"><div class="breakdown-n" style="color:var(--green)" id="bd-correct">0</div><div class="breakdown-l">Correct</div></div>
+        <div class="breakdown-card"><div class="breakdown-n" style="color:var(--red)" id="bd-wrong">0</div><div class="breakdown-l">Incorrect</div></div>
+        <div class="breakdown-card"><div class="breakdown-n" style="color:var(--amber)" id="bd-total">0</div><div class="breakdown-l">Total</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button class="btn btn-ghost" onclick="restartQuiz()">Retry</button>
+        <button class="btn" onclick="showScreen('leaderboard')">Leaderboard →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-leaderboard" class="screen">
+    <div style="padding-top: 32px;">
+      <h2 style="font-family:var(--font-display);font-size:26px;font-weight:800;margin-bottom:6px;">Leaderboard</h2>
+      <p class="text-muted" style="font-size:13px;margin-bottom:28px;">PHY 31101 rankings — all attempts on this device.</p>
+      <div class="lb-card">
+        <div class="lb-header">
+          <h3>Top scores</h3>
+          <span class="text-muted" style="font-size:12px" id="lb-count">0 attempts</span>
+        </div>
+        <div id="lb-rows"></div>
+      </div>
+      <div style="text-align:center">
+        <button class="btn btn-ghost" onclick="showScreen('home')">Return to Home</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Q(topic, question, CORRECT answer, [3 wrong answers], explanation)
+// The correct answer is written first here, but positions are shuffled at runtime.
+const QUESTIONS = [];
+function Q(s, q, c, w, exp){ QUESTIONS.push({s, q, opts:[c, ...w], exp}); }
+
+/* ───────────── PHYSICAL QUANTITIES ───────────── */
+Q("Physical Quantities","A physical quantity is best described as a quantity that:","can be measured",["can only be estimated","has no unit attached","has direction only"],"A physical quantity is anything that can be measured. Physical quantities are classified as scalars or vectors.");
+Q("Physical Quantities","A scalar quantity is one that has:","magnitude only",["magnitude and direction","direction only","neither value nor unit"],"The magnitude of a scalar gives its numerical value and unit, e.g. 5 kg.");
+Q("Physical Quantities","A vector quantity is one that has:","both magnitude and direction",["a numerical value and unit only","direction in space but no size","a unit with no numerical value"],"Examples: velocity, force, momentum, displacement, magnetic field.");
+Q("Physical Quantities","Which of the following is a scalar quantity?","Electric charge",["Magnetic field","Displacement","Momentum"],"Mass, temperature, time, length and charge are scalars.");
+Q("Physical Quantities","Which of the following is a vector quantity?","Displacement",["Mass","Time","Temperature"],"Displacement needs both a size and a direction.");
+Q("Physical Quantities","Which pair contains only vector quantities?","Force and momentum",["Mass and time","Length and charge","Temperature and velocity"],"Force and momentum are vectors; the other pairs contain at least one scalar.");
+Q("Physical Quantities","Which of these has both magnitude and direction but is NOT a vector quantity?","Electric current",["Linear momentum","Angular velocity","Net force"],"Current has a direction of flow but does not obey vector addition, so it is a scalar.");
+Q("Physical Quantities","A tractor moves 3 km east and then 3 km west. Its distance travelled and displacement are respectively:","6 km and 0 km",["0 km and 6 km","6 km and 6 km","0 km and 0 km"],"Distance (scalar) adds up path length = 6 km; displacement (vector) is net change in position = 0.");
+Q("Physical Quantities","Which statement about the magnitude of a scalar quantity is correct?","It gives a numerical value and unit of measure",["It gives the direction of action and a unit","It is always a dimensionless whole number","It fixes the line along which it acts"],"For example, 20 s or 5 kg.");
+
+/* ───────────── UNITS & PREFIXES ───────────── */
+Q("Units & Prefixes","A quantity used as a standard of measurement is called a:","unit",["dimension","vector","constant"],"Units are categorised as basic units and derived units.");
+Q("Units & Prefixes","How many basic (fundamental) quantities are listed in the SI system in your notes?","7",["3","5","9"],"Length, time, mass, electric current, temperature, luminous intensity and quantity of matter.");
+Q("Units & Prefixes","Which of these is NOT a basic SI unit?","Newton",["Kelvin","Ampere","Mole"],"The newton is a derived unit (kg·m/s²).");
+Q("Units & Prefixes","Which quantity–SI unit pair is correct?","Mass – kilogram",["Length – kilometre","Time – hour","Temperature – degree Celsius"],"The SI base units are kg, m, s, A, K, cd and mol.");
+Q("Units & Prefixes","The SI unit of electric current is the:","ampere",["coulomb","volt","ohm"],"Symbol: A.");
+Q("Units & Prefixes","The SI unit of luminous intensity is the:","candela",["lumen","kelvin","mole"],"The candela measures luminous intensity.");
+Q("Units & Prefixes","The SI unit of the quantity of matter is the:","mole",["gram","kilogram","kelvin"],"Symbol: mol.");
+Q("Units & Prefixes","Derived units are obtained from:","basic units combined by multiplication and division",["basic units combined by addition and subtraction","basic units with SI prefixes attached to them","non-SI units converted using tables only"],"For example, velocity (m/s), force and work.");
+Q("Units & Prefixes","The derived unit of velocity is obtained as:","metre ÷ second",["metre × second","second ÷ metre","kilogram ÷ second"],"Velocity = length ÷ time, so the unit is m/s.");
+Q("Units & Prefixes","The unit newton expressed in basic SI units is:","kg m s<sup>−2</sup>",["kg m<sup>2</sup> s<sup>−2</sup>","kg m s<sup>−1</sup>","kg m<sup>−1</sup> s<sup>−2</sup>"],"Force = mass × acceleration → kg·(m/s²).");
+Q("Units & Prefixes","The prefix kilo represents:","10<sup>3</sup>",["10<sup>2</sup>","10<sup>6</sup>","10<sup>−3</sup>"],"20 kW = 20 × 1000 W = 20 000 W.");
+Q("Units & Prefixes","The prefix micro (μ) represents:","10<sup>−6</sup>",["10<sup>−3</sup>","10<sup>−9</sup>","10<sup>6</sup>"],"micro = 10<sup>−6</sup>, milli = 10<sup>−3</sup>, nano = 10<sup>−9</sup>.");
+Q("Units & Prefixes","The prefix nano (n) represents:","10<sup>−9</sup>",["10<sup>−6</sup>","10<sup>−12</sup>","10<sup>9</sup>"],"nano = 10<sup>−9</sup>.");
+Q("Units & Prefixes","The prefix mega (M) represents:","10<sup>6</sup>",["10<sup>3</sup>","10<sup>9</sup>","10<sup>12</sup>"],"mega = 10<sup>6</sup>.");
+Q("Units & Prefixes","The prefix tera (T) represents:","10<sup>12</sup>",["10<sup>9</sup>","10<sup>15</sup>","10<sup>18</sup>"],"tera = 10<sup>12</sup>.");
+Q("Units & Prefixes","The prefix pico (p) represents:","10<sup>−12</sup>",["10<sup>−9</sup>","10<sup>−15</sup>","10<sup>−6</sup>"],"pico = 10<sup>−12</sup>, femto = 10<sup>−15</sup>.");
+Q("Units & Prefixes","The prefix centi (c) represents:","10<sup>−2</sup>",["10<sup>−1</sup>","10<sup>−3</sup>","10<sup>2</sup>"],"1 cm = 10<sup>−2</sup> m.");
+Q("Units & Prefixes","The prefix symbol z (lower case) stands for:","zepto, 10<sup>−21</sup>",["zetta, 10<sup>21</sup>","zepto, 10<sup>−24</sup>","zetta, 10<sup>−21</sup>"],"Table 1.2 gives zepto (z) = 10<sup>−21</sup>.");
+Q("Units & Prefixes","Which prefix and factor does the symbol G represent?","giga, 10<sup>9</sup>",["mega, 10<sup>6</sup>","giga, 10<sup>12</sup>","tera, 10<sup>12</sup>"],"Gigawatt = GW = 10<sup>9</sup> W.");
+Q("Units & Prefixes","How many watts are there in 3.5 GW?","3.5 × 10<sup>9</sup> W",["3.5 × 10<sup>6</sup> W","3.5 × 10<sup>12</sup> W","3.5 × 10<sup>−9</sup> W"],"1 GW = 10<sup>9</sup> W.");
+Q("Units & Prefixes","A wavelength of 250 nm expressed in metres is:","2.5 × 10<sup>−7</sup> m",["2.5 × 10<sup>−6</sup> m","2.5 × 10<sup>−9</sup> m","2.5 × 10<sup>−5</sup> m"],"250 × 10<sup>−9</sup> = 2.5 × 10<sup>−7</sup> m.");
+Q("Units & Prefixes","The quantity 0.2 × 10<sup>5</sup> W is the same as:","20 kW",["0.2 kW","2 kW","200 kW"],"0.2 × 10<sup>5</sup> = 20 × 10<sup>3</sup> W = 20 kW.");
+Q("Units & Prefixes","The quantity 0.2 × 10<sup>5</sup> W expressed using the prefix mega is:","0.02 MW",["0.2 MW","2 MW","0.002 MW"],"Add 1 to the power (÷10 the number): 0.02 × 10<sup>6</sup> W = 0.02 MW.");
+Q("Units & Prefixes","Rewriting 6000 × 10<sup>−14</sup> m using the prefix pico gives:","60 pm",["6 pm","600 pm","0.6 pm"],"6000 × 10<sup>−14</sup> = 6 × 10<sup>−11</sup> m = 60 × 10<sup>−12</sup> m = 60 pm.");
+Q("Units & Prefixes","The distance 40 000 m written using a factor is:","4 × 10<sup>4</sup> m",["4 × 10<sup>3</sup> m","40 × 10<sup>4</sup> m","4 × 10<sup>5</sup> m"],"40 000 = 4 × 10 000 = 4 × 10<sup>4</sup>.");
+Q("Units & Prefixes","The mass of a proton is 1.67 × 10<sup>−27</sup> kg. About how many protons make 1 g?","6.0 × 10<sup>23</sup>",["6.0 × 10<sup>26</sup>","6.0 × 10<sup>20</sup>","1.67 × 10<sup>24</sup>"],"1 g = 10<sup>−3</sup> kg, so N = 10<sup>−3</sup> ÷ 1.67 × 10<sup>−27</sup> ≈ 6.0 × 10<sup>23</sup>.");
+Q("Units & Prefixes","A fortnight (14 days) expressed in microseconds is approximately:","1.21 × 10<sup>12</sup> μs",["1.21 × 10<sup>9</sup> μs","1.21 × 10<sup>6</sup> μs","1.21 × 10<sup>15</sup> μs"],"14 × 86 400 s = 1.2096 × 10<sup>6</sup> s, and 1 s = 10<sup>6</sup> μs.");
+Q("Units & Prefixes","The order of magnitude is a number rounded to:","the nearest power of 10",["the nearest whole number","two significant figures","the nearest multiple of 5"],"It gives accuracy only within a factor of 10.");
+Q("Units & Prefixes","The order of magnitude of 8 × 10<sup>−4</sup> m is:","10<sup>−3</sup> m",["10<sup>−4</sup> m","10<sup>−5</sup> m","8 × 10<sup>−3</sup> m"],"8 is above 5 so it counts as 10: 10 × 10<sup>−4</sup> = 10<sup>−3</sup>.");
+Q("Units & Prefixes","The order of magnitude of 3 × 10<sup>5</sup> m is:","10<sup>5</sup> m",["10<sup>6</sup> m","10<sup>4</sup> m","3 × 10<sup>5</sup> m"],"A number below 5 counts as 1, so the power is unchanged.");
+Q("Units & Prefixes","The order of magnitude of 6.5 × 10<sup>3</sup> s is:","10<sup>4</sup> s",["10<sup>3</sup> s","10<sup>2</sup> s","10<sup>5</sup> s"],"6.5 is between 5 and 10, so it counts as 10: 10 × 10<sup>3</sup> = 10<sup>4</sup>.");
+
+/* ───────────── UNIT CONVERSION ───────────── */
+Q("Unit Conversion","Which of the following is an in-direct (multi-step) conversion?","Miles per hour to metres per second",["Metres to millimetres using 1000","Kilometres to metres using 1000","Grams to kilograms using 1000"],"In-direct conversions need a series of steps; direct ones need a single step.");
+Q("Unit Conversion","1 inch is equal to:","0.0254 m",["0.254 m","0.00254 m","0.3048 m"],"1 inch = 0.0254 m = 2.54 cm.");
+Q("Unit Conversion","1 foot is equal to:","0.3048 m",["0.0254 m","0.9144 m","0.1219 m"],"1 foot = 12 inches = 0.3048 m.");
+Q("Unit Conversion","A speed of 72 km/h in m/s is:","20 m/s",["72 m/s","259 m/s","7.2 m/s"],"1 m/s = 3.6 km/h, so 72 ÷ 3.6 = 20 m/s.");
+Q("Unit Conversion","A speed of 30 m/s in km/h is:","108 km/h",["8.3 km/h","30 km/h","1800 km/h"],"30 × 3.6 = 108 km/h.");
+Q("Unit Conversion","A speed of 60 miles per hour in m/s (1 mile/h = 0.447 m/s) is about:","26.8 m/s",["96.6 m/s","134 m/s","16.7 m/s"],"60 × 0.447 = 26.8 m/s.");
+Q("Unit Conversion","A length of 5 ft in metres is:","1.524 m",["15.24 m","0.610 m","1.640 m"],"5 × 0.3048 = 1.524 m.");
+Q("Unit Conversion","A length of 10 inches in centimetres is:","25.4 cm",["2.54 cm","254 cm","3.94 cm"],"10 × 2.54 = 25.4 cm.");
+Q("Unit Conversion","A distance of 2 miles (1 mile = 1609.344 m) in metres is about:","3219 m",["805 m","32 190 m","3.22 m"],"2 × 1609.344 = 3218.7 m.");
+Q("Unit Conversion","A distance of 5 km expressed in centimetres is:","5 × 10<sup>5</sup> cm",["5 × 10<sup>3</sup> cm","5 × 10<sup>4</sup> cm","5 × 10<sup>6</sup> cm"],"5 km = 5000 m = 5 × 10<sup>5</sup> cm.");
+Q("Unit Conversion","12 points = 1 pica and 6 picas = 1 inch. A figure is misplaced by 0.80 cm. The misplacement in picas is about:","1.89 picas",["0.19 picas","18.9 picas","4.80 picas"],"0.80 cm × (1 in / 2.54 cm) × (6 picas / 1 in) = 1.89 picas.");
+Q("Unit Conversion","Using the same data (12 points = 1 pica, 6 picas = 1 inch), 0.80 cm in points is about:","23 points",["2 points","19 points","73 points"],"1.89 picas × 12 points/pica = 22.7 ≈ 23 points.");
+Q("Unit Conversion","Convert 20 Gm/year to inches per second (1 year ≈ 3.15 × 10<sup>7</sup> s):","2.5 × 10<sup>4</sup> in/s",["6.3 × 10<sup>2</sup> in/s","2.5 × 10<sup>3</sup> in/s","2.5 × 10<sup>7</sup> in/s"],"20 × 10<sup>9</sup> m ÷ 3.15 × 10<sup>7</sup> s ≈ 635 m/s; ÷ 0.0254 m/in ≈ 2.5 × 10<sup>4</sup> in/s.");
+Q("Unit Conversion","A 'line' is 1/12 inch, a 'gry' is 1/10 line and a 'point' is 1/72 inch. An area of 0.50 gry<sup>2</sup> in points squared is:","0.18 point<sup>2</sup>",["0.30 point<sup>2</sup>","0.36 point<sup>2</sup>","0.60 point<sup>2</sup>"],"1 gry = 1/120 in = 0.6 point. Area scales by the square: 0.50 × 0.6<sup>2</sup> = 0.18.");
+
+/* ───────────── DIMENSIONAL ANALYSIS ───────────── */
+Q("Dimensional Analysis","The dimension of a physical quantity denotes:","its physical nature",["its numerical value","its direction only","its unit prefix"],"Dimensions are written in square brackets, e.g. [Length] = L.");
+Q("Dimensional Analysis","The dimensions of the basic quantities mass, length and time are written as:","M, L and T",["m, l and t","kg, m and s","A, B and C"],"[Mass] = M, [Length] = L, [Time] = T.");
+Q("Dimensional Analysis","The dimensions of a physical quantity are:","the powers to which M, L and T are raised",["the numerical values of M, L and T","the SI prefixes of the quantity","the number of terms in a formula"],"A basic quantity that does not appear is raised to power zero.");
+Q("Dimensional Analysis","The dimensional formula of velocity is:","LT<sup>−1</sup>",["LT<sup>−2</sup>","L<sup>−1</sup>T","MLT<sup>−1</sup>"],"Velocity = length ÷ time.");
+Q("Dimensional Analysis","The dimensional formula of acceleration is:","LT<sup>−2</sup>",["LT<sup>−1</sup>","L<sup>2</sup>T<sup>−1</sup>","MLT<sup>−2</sup>"],"Acceleration = velocity ÷ time.");
+Q("Dimensional Analysis","The dimensional formula of force is:","MLT<sup>−2</sup>",["MLT<sup>−1</sup>","ML<sup>2</sup>T<sup>−2</sup>","ML<sup>−1</sup>T<sup>−2</sup>"],"Force = mass × acceleration.");
+Q("Dimensional Analysis","The dimensional formula of pressure is:","ML<sup>−1</sup>T<sup>−2</sup>",["MLT<sup>−2</sup>","ML<sup>2</sup>T<sup>−2</sup>","ML<sup>−2</sup>T<sup>−2</sup>"],"Pressure = force ÷ area = MLT<sup>−2</sup> ÷ L<sup>2</sup>.");
+Q("Dimensional Analysis","The dimensional formula of potential energy (mass × g × height) is:","ML<sup>2</sup>T<sup>−2</sup>",["MLT<sup>−2</sup>","ML<sup>2</sup>T<sup>−1</sup>","ML<sup>−1</sup>T<sup>−2</sup>"],"M × LT<sup>−2</sup> × L = ML<sup>2</sup>T<sup>−2</sup>.");
+Q("Dimensional Analysis","In the dimensional formula of potential energy, the powers of M, L and T are respectively:","1, 2 and −2",["1, 1 and −2","1, 2 and −1","2, 1 and −2"],"[PE] = M<sup>1</sup>L<sup>2</sup>T<sup>−2</sup>.");
+Q("Dimensional Analysis","The dimensional formula of impulse (force × time) is:","MLT<sup>−1</sup>",["MLT<sup>−2</sup>","ML<sup>2</sup>T<sup>−1</sup>","ML<sup>−1</sup>T<sup>−1</sup>"],"MLT<sup>−2</sup> × T = MLT<sup>−1</sup>, which is the same as momentum.");
+Q("Dimensional Analysis","The dimensional formula of power (energy ÷ time) is:","ML<sup>2</sup>T<sup>−3</sup>",["ML<sup>2</sup>T<sup>−2</sup>","MLT<sup>−3</sup>","ML<sup>2</sup>T<sup>−1</sup>"],"ML<sup>2</sup>T<sup>−2</sup> ÷ T = ML<sup>2</sup>T<sup>−3</sup>. The same dimensions apply to electric power.");
+Q("Dimensional Analysis","The dimensional formula of density is:","ML<sup>−3</sup>",["ML<sup>3</sup>","ML<sup>−2</sup>","M<sup>−1</sup>L<sup>3</sup>"],"Density = mass ÷ volume.");
+Q("Dimensional Analysis","The dimensional formula of energy density (energy per unit volume) is:","ML<sup>−1</sup>T<sup>−2</sup>",["ML<sup>2</sup>T<sup>−2</sup>","ML<sup>−3</sup>T<sup>−2</sup>","MLT<sup>−2</sup>"],"ML<sup>2</sup>T<sup>−2</sup> ÷ L<sup>3</sup> = ML<sup>−1</sup>T<sup>−2</sup>, the same as pressure.");
+Q("Dimensional Analysis","The dimensional formula of the spring constant k (from F = kx) is:","MT<sup>−2</sup>",["MLT<sup>−2</sup>","MT<sup>−1</sup>","ML<sup>−1</sup>T<sup>−2</sup>"],"k = F ÷ x = MLT<sup>−2</sup> ÷ L.");
+Q("Dimensional Analysis","The dimensional formula of the frequency is:","T<sup>−1</sup>",["T","LT<sup>−1</sup>","T<sup>−2</sup>"],"Frequency = 1 ÷ period.");
+Q("Dimensional Analysis","From F = Gm<sub>1</sub>m<sub>2</sub>/r<sup>2</sup>, the dimensional formula of the gravitational constant G is:","M<sup>−1</sup>L<sup>3</sup>T<sup>−2</sup>",["M<sup>−1</sup>L<sup>2</sup>T<sup>−2</sup>","ML<sup>3</sup>T<sup>−2</sup>","M<sup>−2</sup>L<sup>3</sup>T<sup>−2</sup>"],"G = Fr<sup>2</sup>/(m<sub>1</sub>m<sub>2</sub>) = MLT<sup>−2</sup> L<sup>2</sup> / M<sup>2</sup>.");
+Q("Dimensional Analysis","Planck's constant h is found from E = hf. Its dimensional formula is:","ML<sup>2</sup>T<sup>−1</sup>",["ML<sup>2</sup>T<sup>−2</sup>","ML<sup>2</sup>T<sup>−3</sup>","MLT<sup>−1</sup>"],"h = E ÷ f = ML<sup>2</sup>T<sup>−2</sup> ÷ T<sup>−1</sup>.");
+Q("Dimensional Analysis","The principle of homogeneity states that terms which are added or subtracted must:","have the same dimensions",["have the same numerical value","have the same unit prefix","be of different dimensions"],"A physical relation is dimensionally correct only if each term has the same dimensions.");
+Q("Dimensional Analysis","An equation is dimensionally correct when:","[LHS] = [RHS]",["[LHS] > [RHS]","[LHS] = 0","[RHS] has no dimensions"],"The dimensions on both sides must be equal.");
+Q("Dimensional Analysis","Which equation is dimensionally correct (s = distance, u, v = speeds, a = acceleration, t = time)?","s = ut + ½at<sup>2</sup>",["s = ut + at","v = u + at<sup>2</sup>","v<sup>2</sup> = u + 2as"],"Each term in s = ut + ½at² has dimension L. In the other equations, the terms differ in dimension.");
+Q("Dimensional Analysis","Which period formula for a simple pendulum of length l and gravitational acceleration g is dimensionally consistent?","T = 2π√(l/g)",["T = 2π√(g/l)","T = 2π l/g","T = 2π√(lg)"],"√(l/g) = √(L ÷ LT<sup>−2</sup>) = T. The other options do not reduce to T.");
+Q("Dimensional Analysis","In the gas equation (P + a/V<sup>2</sup>)(V − b) = RT, the dimensional formula of a is:","ML<sup>5</sup>T<sup>−2</sup>",["ML<sup>−1</sup>T<sup>−2</sup>","ML<sup>3</sup>T<sup>−2</sup>","ML<sup>6</sup>T<sup>−2</sup>"],"a/V² must have the dimensions of P, so [a] = [P][V²] = ML<sup>−1</sup>T<sup>−2</sup> × L<sup>6</sup>.");
+Q("Dimensional Analysis","In the same gas equation, the dimensional formula of b is:","L<sup>3</sup>",["L<sup>2</sup>","L<sup>6</sup>","ML<sup>−1</sup>T<sup>−2</sup>"],"b is subtracted from V, so it has the dimensions of volume.");
+Q("Dimensional Analysis","For V = πPr<sup>4</sup>/(8ηl), where V is the volume flow rate, the dimensional formula of η is:","ML<sup>−1</sup>T<sup>−1</sup>",["ML<sup>−1</sup>T<sup>−2</sup>","ML<sup>−2</sup>T<sup>−1</sup>","MLT<sup>−1</sup>"],"η = πPr⁴/(8Vl) → ML<sup>−1</sup>T<sup>−2</sup> L<sup>4</sup> ÷ (L<sup>3</sup>T<sup>−1</sup> L) = ML<sup>−1</sup>T<sup>−1</sup>.");
+Q("Dimensional Analysis","For x = At<sup>3</sup> + Bt (x a length, t a time), the dimensional formula of A is:","LT<sup>−3</sup>",["LT<sup>−1</sup>","LT<sup>3</sup>","L<sup>2</sup>T<sup>−3</sup>"],"[A]T³ = L, so [A] = LT<sup>−3</sup>.");
+Q("Dimensional Analysis","For x = At<sup>3</sup> + Bt (x a length, t a time), the dimensional formula of B is:","LT<sup>−1</sup>",["LT<sup>−3</sup>","LT<sup>−2</sup>","L<sup>−1</sup>T"],"[B]T = L, so [B] = LT<sup>−1</sup>.");
+Q("Dimensional Analysis","Which quantity is a dimensionless variable (no dimensions and no fixed value)?","Strain",["Force","Planck's constant","The number π"],"Strain and specific gravity are dimensionless variables.");
+Q("Dimensional Analysis","Which quantity is a dimensional constant?","Gravitational constant",["Velocity","Index of refraction","Sin 60°"],"A dimensional constant has dimensions and a fixed value; G and Planck's constant are examples.");
+Q("Dimensional Analysis","Which of the following is a dimensionless constant?","π",["Work","Power","Specific gravity"],"π has no dimensions and a fixed value; so do pure numbers.");
+Q("Dimensional Analysis","Which of these is a dimensional variable?","Work",["Strain","log 20","π"],"Force, velocity, work and power have dimensions but no fixed value.");
+Q("Dimensional Analysis","Which task can dimensional analysis NOT do?","Find dimensionless constants such as ½ or 2π",["Check the correctness of an equation","Convert one system of units to another","Derive relations between physical quantities"],"Dimensional analysis cannot find pure numbers (such as ½ or 2π) in a formula.");
+
+/* ───────────── SIGNIFICANT FIGURES ───────────── */
+Q("Significant Figures","Measurement is best defined as:","comparison of an unknown quantity with a known fixed quantity",["estimation of an unknown quantity by visual judgement","counting the number of identical units in an object","calculation of an unknown quantity from a given formula"],"A measured magnitude is expressed by a numerical value and a unit.");
+Q("Significant Figures","The significant figures of a measurement are:","the certain digits plus one uncertain digit",["all the digits shown on a calculator","only the digits before the decimal point","all non-zero digits only"],"The number of significant figures is limited by the limit of precision.");
+Q("Significant Figures","How many significant figures are in 246.58 g?","5",["3","4","6"],"All non-zero digits are significant.");
+Q("Significant Figures","How many significant figures are in 901.003 m?","6",["3","4","5"],"Zeros between two non-zero digits (captive zeros) are significant.");
+Q("Significant Figures","How many significant figures are in 504 000 s (no decimal point shown)?","3",["4","5","6"],"Trailing zeros to the left of an understood decimal point are not significant.");
+Q("Significant Figures","How many significant figures are in 406.000?","6",["3","4","5"],"Zeros to the right of an expressed decimal point and of a non-zero digit are significant.");
+Q("Significant Figures","How many significant figures are in 0.000132 mL?","3",["6","4","5"],"Leading zeros are not significant.");
+Q("Significant Figures","How many significant figures are in 0.08040 N?","4",["2","3","5"],"Leading zeros are not significant but the last 0 (after a non-zero digit, right of the decimal point) is.");
+Q("Significant Figures","How many significant figures are in 60.00 N?","4",["1","2","3"],"Zeros to the right of the decimal point and of a non-zero digit are significant.");
+Q("Significant Figures","In addition and subtraction the result must have the same number of ___ as the term with the fewest.","decimal places",["significant figures","digits before the decimal point","zeros"],"Round to the smallest number of decimal places.");
+Q("Significant Figures","In multiplication and division the result must have the same number of ___ as the least precise term.","significant figures",["decimal places","digits after the decimal point","zeros"],"Round to the smallest number of significant figures.");
+Q("Significant Figures","3.765 m + 46.8553 m + 0.22 m, correctly rounded, is:","50.84 m",["50.8 m","50.840 m","51 m"],"The sum 50.8403 is rounded to 2 decimal places (the fewest, from 0.22).");
+Q("Significant Figures","11.314 m × 6.81 m, correctly rounded, is:","77.0 m<sup>2</sup>",["77.05 m<sup>2</sup>","77 m<sup>2</sup>","76.8 m<sup>2</sup>"],"The product 77.048… is rounded to 3 significant figures (from 6.81).");
+Q("Significant Figures","12.5 cm + 3.27 cm, correctly rounded, is:","15.8 cm",["15.77 cm","16 cm","15.7 cm"],"The sum 15.77 is rounded to 1 decimal place (from 12.5).");
+Q("Significant Figures","8.4 m × 2.15 m, correctly rounded, is:","18 m<sup>2</sup>",["18.1 m<sup>2</sup>","18.06 m<sup>2</sup>","20 m<sup>2</sup>"],"8.4 has 2 significant figures, so the product 18.06 becomes 18.");
+Q("Significant Figures","9.87 m ÷ 3.1 s, correctly rounded, is:","3.2 m/s",["3.18 m/s","3.184 m/s","3 m/s"],"3.1 has 2 significant figures, so 3.184 becomes 3.2.");
+Q("Significant Figures","Mathematical calculations can:","neither increase precision nor significant figures",["remove all uncertainty from the measured values","increase the precision of the measured values","increase the number of significant figures"],"A calculation cannot be more precise than the measurements used.");
+
+/* ───────────── ACCURACY & ERRORS ───────────── */
+Q("Accuracy & Errors","Accuracy is a measure of how close:","a measured value is to the true value",["repeated readings are to each other","a reading is to zero","two instruments are to each other"],"Precision is the closeness of repeated measurements.");
+Q("Accuracy & Errors","Precision is the:","closeness between repeated measurements",["closeness of a measurement to the true value","number of different instruments used","size of the smallest scale division"],"Reproducibility of readings is called precision.");
+Q("Accuracy & Errors","The true density of aluminium is 2.7 g/mL. Kondwani recorded 2.924, 2.923, 2.925 and 2.926. His data is:","precise but not accurate",["accurate but not precise","both accurate and precise","neither accurate nor precise"],"The readings agree closely but are all far from 2.7.");
+Q("Accuracy & Errors","Chikaiko recorded 2.649, 2.731, 2.695 and 2.742 for aluminium (true value 2.7 g/mL). His data is:","accurate but not precise",["precise but not accurate","both accurate and precise","neither accurate nor precise"],"The average is near 2.7 but the readings are scattered.");
+Q("Accuracy & Errors","Brino recorded 2.701, 2.699, 2.702 and 2.698 for aluminium (true value 2.7 g/mL). His data is:","both accurate and precise",["accurate but not precise","precise but not accurate","neither accurate nor precise"],"The readings agree closely and are very near the true value.");
+Q("Accuracy & Errors","The limit of precision of an instrument is taken as:","half of its smallest division",["its smallest division","twice its smallest division","its largest reading"],"For a Vernier caliper with 0.1 mm divisions: ½ × 0.1 = ±0.05 mm.");
+Q("Accuracy & Errors","A metre rule has a smallest division of 1 mm. Its limit of precision is:","±0.5 mm",["±1 mm","±0.1 mm","±0.05 mm"],"½ × 1 mm = 0.5 mm.");
+Q("Accuracy & Errors","A micrometer screw gauge has a smallest division of 0.01 mm. Its limit of precision is:","±0.005 mm",["±0.01 mm","±0.05 mm","±0.0005 mm"],"½ × 0.01 mm = 0.005 mm.");
+Q("Accuracy & Errors","A rod measures 5.95 ± 0.05 mm. The true length lies between:","5.90 mm and 6.00 mm",["5.00 mm and 6.00 mm","5.95 mm and 6.00 mm","5.85 mm and 6.05 mm"],"5.95 − 0.05 = 5.90 and 5.95 + 0.05 = 6.00.");
+Q("Accuracy & Errors","In a physics experiment, an error is best described as:","the uncertainty in a measurement",["a mistake that can always be corrected","the true value of the quantity","the smallest division of an instrument"],"Even the most sophisticated equipment has some departure from the true value.");
+Q("Accuracy & Errors","Systematic errors are errors that:","arise from known causes and tend to push readings one way",["arise from unpredictable causes and scatter readings both ways","come from the carelessness or hurry of the researcher","are reduced greatly by averaging many readings"],"For example, a zero error on an instrument.");
+Q("Accuracy & Errors","Random errors are errors that:","arise from unknown causes with no set pattern",["always push readings in one direction","are due to known faults in the apparatus","can never be reduced"],"They are reduced by taking repeated readings and averaging.");
+Q("Accuracy & Errors","Gross errors are mainly due to:","carelessness of the researcher",["unknown causes in the apparatus","a zero error on the instrument","the limit of precision of the scale"],"They are mostly human errors and cannot be corrected, but can be reduced.");
+Q("Accuracy & Errors","Taking many readings and averaging them reduces mostly:","random errors",["systematic errors","gross errors only","zero errors"],"Averaging reduces random errors but not systematic errors.");
+Q("Accuracy & Errors","A balance reads 0.5 g too high every time even with nothing on it. This is a:","systematic error",["random error","gross error","relative error"],"The error is consistent and in one direction.");
+Q("Accuracy & Errors","A student mistakenly reads 52 as 25 from a scale because of hurry. This is a:","gross error",["systematic error","random error","percentage error"],"Gross errors come from human carelessness.");
+Q("Accuracy & Errors","The true value of a quantity is taken as:","the arithmetic mean of many readings",["the largest of the readings taken","the first reading in the series","the smallest of the readings taken"],"Mean = (a<sub>1</sub> + a<sub>2</sub> + … + a<sub>n</sub>) ÷ n.");
+Q("Accuracy & Errors","The absolute error in a reading a<sub>i</sub>, with mean ā, is defined as:","Δa<sub>i</sub> = ā − a<sub>i</sub>",["Δa<sub>i</sub> = a<sub>i</sub> ÷ ā","Δa<sub>i</sub> = a<sub>i</sub> + ā","Δa<sub>i</sub> = ā × a<sub>i</sub>"],"Absolute error is the difference between the true (mean) value and the measured value.");
+Q("Accuracy & Errors","The mean absolute error is:","the mean of the magnitudes of the absolute errors",["the mean of the signed values of the absolute errors","the largest of the absolute errors recorded","the sum of the squares of the absolute errors"],"Δā = (|Δa<sub>1</sub>| + … + |Δa<sub>n</sub>|) ÷ n.");
+Q("Accuracy & Errors","The relative (fractional) error is given by:","mean absolute error ÷ mean value",["mean value ÷ mean absolute error","mean absolute error × mean value","mean value − mean absolute error"],"Relative error = Δā ÷ ā.");
+Q("Accuracy & Errors","Relative error 0.02 corresponds to a percentage error of:","2%",["0.02%","0.2%","20%"],"Percentage error = relative error × 100.");
+Q("Accuracy & Errors","The period of a pendulum is recorded as 5.26 s, 5.12 s, 4.84 s, 5.42 s and 5.60 s. The mean period is:","5.25 s",["5.12 s","5.42 s","5.60 s"],"Sum = 26.24 s, and 26.24 ÷ 5 = 5.248 ≈ 5.25 s.");
+Q("Accuracy & Errors","For the same pendulum data (mean 5.25 s), the absolute error in the reading 4.84 s is:","0.41 s",["−0.41 s","0.35 s","0.13 s"],"5.25 − 4.84 = +0.41 s. The error is the mean minus the reading.");
+Q("Accuracy & Errors","For the same data the mean absolute error is about:","0.21 s",["0.12 s","0.42 s","0.05 s"],"(0.01 + 0.13 + 0.41 + 0.17 + 0.35) ÷ 5 = 1.07 ÷ 5 ≈ 0.21 s.");
+Q("Accuracy & Errors","For the same data the percentage error is about:","4%",["0.4%","2%","21%"],"0.21 ÷ 5.25 × 100 ≈ 4%.");
+Q("Accuracy & Errors","Four readings of a length are 10.2 cm, 10.4 cm, 10.3 cm and 10.1 cm. The mean absolute error is:","0.10 cm",["0.25 cm","0.05 cm","0.40 cm"],"Mean = 10.25 cm; absolute errors 0.05, 0.15, 0.05, 0.15, whose mean is 0.10 cm.");
+Q("Accuracy & Errors","For the same four readings (mean 10.25 cm, mean absolute error 0.10 cm) the percentage error is about:","0.98%",["9.8%","0.098%","1.5%"],"0.10 ÷ 10.25 × 100 ≈ 0.98%.");
+Q("Accuracy & Errors","A quantity is 8.0 with a mean absolute error of 0.2. Its percentage error is:","2.5%",["0.25%","25%","1.6%"],"0.2 ÷ 8.0 × 100 = 2.5%.");
+
+/* ───────────── ERROR PROPAGATION ───────────── */
+Q("Error Propagation","(16.0 ± 0.2) cm + (9.0 ± 0.1) cm equals:","25.0 ± 0.3 cm",["25.0 ± 0.1 cm","25.0 ± 0.2 cm","25.0 ± 0.02 cm"],"Add the quantities: 25.0 cm; add the errors: 0.2 + 0.1 = 0.3 cm.");
+Q("Error Propagation","(16.0 ± 0.2) cm − (9.0 ± 0.1) cm equals:","7.0 ± 0.3 cm",["7.0 ± 0.1 cm","7.0 ± 0.2 cm","7.0 ± 0.02 cm"],"When subtracting, the quantities are subtracted but the errors are still added.");
+Q("Error Propagation","When quantities are added or subtracted, the absolute errors are:","always added",["always subtracted","multiplied together","averaged"],"ΔA = Δx + Δy in both cases.");
+Q("Error Propagation","(40.0 ± 0.3) m − (25.0 ± 0.2) m equals:","15.0 ± 0.5 m",["15.0 ± 0.1 m","15.0 ± 0.3 m","15.0 ± 0.25 m"],"Quantity: 40.0 − 25.0 = 15.0; error: 0.3 + 0.2 = 0.5.");
+Q("Error Propagation","In multiplication or division, the fractional errors:","are added",["are subtracted","are multiplied","are ignored"],"ΔP/P = Δx/x + Δy/y.");
+Q("Error Propagation","(10.0 ± 0.1) × (5.0 ± 0.1) equals:","50 ± 1.5",["50 ± 0.2","50 ± 0.03","50 ± 3"],"Relative errors: 0.1/10 + 0.1/5 = 0.01 + 0.02 = 0.03, so the error is 0.03 × 50 = 1.5.");
+Q("Error Propagation","(20.0 ± 0.2) ÷ (5.0 ± 0.1) equals:","4.0 ± 0.12",["4.0 ± 0.3","4.0 ± 0.1","4.0 ± 0.03"],"Relative errors: 0.01 + 0.02 = 0.03, so error = 0.03 × 4.0 = 0.12.");
+Q("Error Propagation","A tractor moves from 20 ± 0.02 m/s to 60 ± 0.06 m/s in 40 ± 0.04 s. Its acceleration is 1 m/s<sup>2</sup> with an absolute error of:","0.003 m/s<sup>2</sup>",["0.12 m/s<sup>2</sup>","0.08 m/s<sup>2</sup>","0.0015 m/s<sup>2</sup>"],"Δ(v−u) = 0.08, so relative errors: 0.08/40 + 0.04/40 = 0.003, and a = 1 gives 0.003.");
+Q("Error Propagation","For D = x<sup>n</sup>, the fractional error in D is:","n × (Δx/x)",["(Δx/x)<sup>n</sup>","Δx/(nx)","n + Δx/x"],"ΔD/D = n Δx/x.");
+Q("Error Propagation","Evaluate D = (2.0 ± 0.02 cm)<sup>2</sup>:","4.0 ± 0.08 cm<sup>2</sup>",["4.0 ± 0.02 cm<sup>2</sup>","4.0 ± 0.04 cm<sup>2</sup>","4.0 ± 0.16 cm<sup>2</sup>"],"Fractional error = 2 × 0.02/2.0 = 0.02, and the absolute error = 0.02 × 4.0 = 0.08 cm². (The slide's worked answer 0.02 is the fractional error, not the absolute one.)");
+Q("Error Propagation","The radius of a sphere is measured with a 0.4% error. The error in its surface area (A = 4πr<sup>2</sup>) is:","0.8%",["0.4%","1.6%","0.2%"],"Surface area ∝ r², so the percentage error doubles: 2 × 0.4% = 0.8%.");
+Q("Error Propagation","The side of a cube is measured with a 1% error. The error in its volume is:","3%",["1%","2%","6%"],"V ∝ s³, so the percentage error is 3 × 1% = 3%.");
+Q("Error Propagation","For X = A<sup>4</sup>B<sup>1/3</sup>/(C D<sup>3/2</sup>), the fractional error ΔX/X is:","4ΔA/A + ⅓ΔB/B + ΔC/C + 3⁄2 ΔD/D",["4ΔA/A + ⅓ΔB/B − ΔC/C − 3⁄2 ΔD/D","ΔA/A + ΔB/B + ΔC/C + ΔD/D","4ΔA/A × ⅓ΔB/B ÷ (ΔC/C × 3⁄2 ΔD/D)"],"Powers multiply the fractional errors and all fractional errors are added, even for quantities in the denominator.");
+Q("Error Propagation","Two spheres are cut from the same uniform rock. One has radius 4.50 cm; the other has five times the mass. Its radius is about:","7.69 cm",["22.5 cm","10.1 cm","9.00 cm"],"Mass ∝ r³, so r = 4.50 × 5<sup>1/3</sup> = 4.50 × 1.71 ≈ 7.69 cm.");
+Q("Error Propagation","Which instrument has parts called the anvil, spindle, barrel and thimble?","Micrometer screw gauge",["Vernier caliper","Electronic balance","Metre rule"],"These are the parts of a micrometer screw gauge.");
+
+/* ───────────── APP LOGIC ───────────── */
+const TOPICS = [...new Set(QUESTIONS.map(q => q.s))];
+const AVATARS = ['#3498db','#2980b9','#2ecc71','#e74c3c','#9b59b6','#1abc9c','#e67e22','#34495e'];
+
+function load(k, d){ try { return JSON.parse(localStorage.getItem(k) || d); } catch(e){ return JSON.parse(d); } }
+function save(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+
+let activeTopics = new Set(TOPICS);
+let quiz = [];
+let cur = 0, score = 0, answered = false;
+let currentUser = {name:'', reg:''};
+let leaderboard = load('phy31101_lb', '[]');
+let comments = load('phy31101_comments', '{}');
+
+function shuffle(a){
+  a = a.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if(id==='leaderboard'){ renderLB(); document.querySelectorAll('.nav-btn')[1].classList.add('active'); }
+  else document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function buildTopicGrid(){
+  const g = document.getElementById('topic-grid');
+  g.innerHTML='';
+  TOPICS.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'topic-toggle on';
+    b.textContent = t;
+    b.onclick = function(){
+      if(activeTopics.has(t)){
+        if(activeTopics.size === 1) return;
+        activeTopics.delete(t); b.className='topic-toggle';
+      } else {
+        activeTopics.add(t); b.className='topic-toggle on';
+      }
+    };
+    g.appendChild(b);
+  });
+}
+
+function startQuiz(){
+  const name = document.getElementById('inp-name').value.trim();
+  const reg = document.getElementById('inp-reg').value.trim();
+  if(!name){ alert('Please enter your name to begin.'); return; }
+  currentUser = { name, reg };
+  let pool = shuffle(QUESTIONS.filter(q => activeTopics.has(q.s)));
+  const cnt = document.getElementById('inp-count').value;
+  if(cnt !== 'all') pool = pool.slice(0, parseInt(cnt, 10));
+  quiz = pool;
+  if(quiz.length === 0){ alert('Select at least one topic.'); return; }
+  cur = 0; score = 0; answered = false;
+  showScreen('quiz');
+  renderQ();
+}
+
+function renderQ(){
+  if(cur >= quiz.length){ endQuiz(); return; }
+  const q = quiz[cur];
+  document.getElementById('prog-fill').style.width = ((cur / quiz.length) * 100) + '%';
+  document.getElementById('prog-label').textContent = `Question ${cur+1} of ${quiz.length}`;
+  document.getElementById('prog-score').textContent = `${score} pts`;
+  document.getElementById('q-section').innerHTML = q.s;
+  document.getElementById('q-text').innerHTML = q.q;
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  const shuffled = shuffle(q.opts.map((opt, i) => ({opt, isCorrect: i === 0})));
+  const correctIdx = shuffled.findIndex(o => o.isCorrect);
+  const letters = ['A','B','C','D'];
+  shuffled.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt-btn';
+    b.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${o.opt}</span>`;
+    b.onclick = function(){ if(!answered) select(i, correctIdx, b, q.exp); };
+    opts.appendChild(b);
+  });
+
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('discussion-section').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('next-btn').textContent = (cur === quiz.length - 1) ? 'Finish →' : 'Next Question →';
+  answered = false;
+  window.scrollTo(0,0);
+}
+
+function select(selectedIdx, correctIdx, btn, exp){
+  answered = true;
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById('feedback');
+  if(selectedIdx === correctIdx){
+    btn.classList.add('correct');
+    score++;
+    fb.className = 'feedback-box correct';
+    fb.innerHTML = `<strong>✓ Correct!</strong>${exp}`;
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn')[correctIdx].classList.add('correct');
+    fb.className = 'feedback-box wrong';
+    fb.innerHTML = `<strong>✗ Not quite.</strong>${exp}`;
+  }
+  fb.style.display = 'block';
+  document.getElementById('next-btn').style.display = 'inline-flex';
+  document.getElementById('prog-score').textContent = `${score} pts`;
+  showDiscussion(cur);
+}
+
+function nextQ(){ cur++; renderQ(); }
+
+function qKey(idx){
+  const t = quiz[idx].q.replace(/<[^>]*>/g,'').replace(/[^a-zA-Z0-9]/g,'').slice(0, 40);
+  return 'che_' + t;
+}
+function showDiscussion(idx){
+  const key = qKey(idx);
+  document.getElementById('discussion-section').style.display = 'block';
+  renderComments(key);
+  document.getElementById('comment-input').dataset.key = key;
+}
+function renderComments(key){
+  const list = document.getElementById('comments-list');
+  const c = comments[key] || [];
+  if(c.length === 0){
+    list.innerHTML = '<div class="no-comments">No notes yet — add your own observation.</div>';
+    return;
+  }
+  list.innerHTML = c.map(cm => `
+    <div class="comment">
+      <div class="comment-author">${escHtml(cm.name)} ${cm.reg ? '<span style="color:var(--muted);font-weight:400">· '+escHtml(cm.reg)+'</span>' : ''}</div>
+      <div class="comment-text">${escHtml(cm.text)}</div>
+      <div class="comment-time">${cm.time}</div>
+    </div>`).join('');
+  list.scrollTop = list.scrollHeight;
+}
+function postComment(){
+  const inp = document.getElementById('comment-input');
+  const key = inp.dataset.key;
+  const text = inp.value.trim();
+  if(!text || !key) return;
+  if(!comments[key]) comments[key] = [];
+  const now = new Date();
+  comments[key].push({
+    name: currentUser.name, reg: currentUser.reg, text,
+    time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + ' · ' + now.toLocaleDateString()
+  });
+  save('phy31101_comments', comments);
+  inp.value = '';
+  renderComments(key);
+}
+
+function endQuiz(){
+  const total = quiz.length;
+  const pct = Math.round((score / total) * 100);
+  document.getElementById('result-ring').style.setProperty('--pct', pct + '%');
+  document.getElementById('result-pct').textContent = pct + '%';
+  document.getElementById('bd-correct').textContent = score;
+  document.getElementById('bd-wrong').textContent = total - score;
+  document.getElementById('bd-total').textContent = total;
+
+  let title, sub;
+  if(pct >= 90){ title='Physics Master!'; sub='Excellent grasp of units, dimensional analysis, significant figures and error analysis.'; }
+  else if(pct >= 75){ title='Well done!'; sub='Strong performance. Revise the conversions and error-propagation rules to reach 100%.'; }
+  else if(pct >= 60){ title='Good effort.'; sub='Solid base. Revisit dimensional analysis, significant-figure rules and error calculations.'; }
+  else { title='Back to the slides.'; sub='Re-read the lecture slides, redo the worked examples, then try again.'; }
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-sub').textContent = sub;
+
+  leaderboard.push({
+    name: currentUser.name, reg: currentUser.reg, score, total, pct,
+    time: new Date().toLocaleDateString(),
+    color: AVATARS[Math.abs(hashStr(currentUser.name)) % AVATARS.length]
+  });
+  leaderboard.sort((a,b) => b.pct - a.pct || b.score - a.score);
+  save('phy31101_lb', leaderboard);
+  document.getElementById('stat-players').textContent = leaderboard.length;
+  showScreen('result');
+}
+
+function restartQuiz(){ showScreen('home'); }
+
+function renderLB(){
+  const rows = document.getElementById('lb-rows');
+  document.getElementById('lb-count').textContent = `${leaderboard.length} attempt${leaderboard.length!==1?'s':''}`;
+  if(leaderboard.length === 0){
+    rows.innerHTML = '<div class="lb-empty">No results yet. Be the first to take the quiz!</div>';
+    return;
+  }
+  const rankClass = ['gold','silver','bronze'];
+  const rankLabel = ['1st','2nd','3rd'];
+  rows.innerHTML = leaderboard.slice(0,20).map((e,i) => {
+    const initials = e.name.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase().slice(0,2);
+    const isYou = currentUser.name && e.name === currentUser.name;
+    return `<div class="lb-row">
+      <div class="lb-rank ${rankClass[i]||''}">${i<3?rankLabel[i]:i+1}</div>
+      <div class="lb-avatar" style="background:${e.color}22;color:${e.color}">${escHtml(initials)}</div>
+      <div class="lb-info">
+        <div class="lb-name">${escHtml(e.name)} ${isYou?'<span class="badge-you">you</span>':''}</div>
+        <div class="lb-meta">${e.reg ? escHtml(e.reg)+' · ' : ''}${e.time}</div>
+      </div>
+      <div class="lb-score-wrap">
+        <div class="lb-score">${e.score}/${e.total}</div>
+        <div class="lb-pct">${e.pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function hashStr(s){ let h=0; for(let c of s){ h=((h<<5)-h)+c.charCodeAt(0); h|=0; } return h; }
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+buildTopicGrid();
+document.getElementById('stat-q').textContent = QUESTIONS.length;
+document.getElementById('stat-t').textContent = TOPICS.length;
+document.getElementById('stat-players').textContent = leaderboard.length;
+</script>
+</body>
+</html>
